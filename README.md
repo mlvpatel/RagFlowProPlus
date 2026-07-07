@@ -153,7 +153,9 @@ RagFlowProPlus is the 2025 rung in a year by year line of enterprise RAG systems
 | 2023 | [RagFlowPlus](https://github.com/mlvpatel/RagFlowPlus) | Advanced RAG, hybrid retrieval and reranking |
 | 2024 | [RagFlowPro](https://github.com/mlvpatel/RagFlowPro) | Modular production RAG, pgvector, streaming, evaluation |
 | 2025 | RagFlowProPlus, this repo | Agentic RAG, self correcting with confidence grading |
-| 2026 | RagFlowProMax, UltimateRAG | Multi agent enterprise, multimodal |
+| 2026 | [RagFlowProMax](https://github.com/mlvpatel/RagFlowProMax), UltimateRAG | Multi agent enterprise, multimodal |
+
+Every rung is measured on the same golden questions, keyless, in the [rag-catalog](https://github.com/mlvpatel/rag-catalog) hub.
 
 ## Author
 
