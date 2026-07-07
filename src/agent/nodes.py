@@ -61,7 +61,7 @@ def retrieve(state):
 
 
 def grade_documents(state):
-    llm = _make_llm(state["model"])
+    llm = _make_llm(state["model"], temperature=0)
     context = _format_context(state.get("documents") or [])[:4000]
     prompt = f"Question: {state['question']}\n\nContext:\n{context}"
     raw = llm.invoke(
@@ -88,7 +88,7 @@ def grade_documents(state):
 
 
 def rewrite_query(state):
-    llm = _make_llm(state["model"])
+    llm = _make_llm(state["model"], temperature=0)
     new_query = llm.invoke(
         [
             SystemMessage(content=_REWRITE_SYSTEM),
@@ -107,7 +107,7 @@ def web_search(state):
 
 
 def generate(state):
-    llm = _make_llm(state["model"])
+    llm = _make_llm(state["model"], temperature=0)
     context = _format_context(state.get("documents") or [])
     system = _ANSWER_SYSTEM.format(context=context)
     answer = llm.invoke(
@@ -119,7 +119,7 @@ def generate(state):
 
 
 def self_check(state):
-    llm = _make_llm(state["model"])
+    llm = _make_llm(state["model"], temperature=0)
     context = _format_context(state.get("documents") or [])[:4000]
     prompt = f"Answer: {state.get('answer', '')}\n\nContext:\n{context}"
     raw = llm.invoke(

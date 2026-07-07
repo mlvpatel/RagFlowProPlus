@@ -30,7 +30,14 @@ def _decide_after_grade(state) -> str:
 
 
 def _decide_after_check(state) -> str:
-    if not state.get("grounded", True) and state.get("generations", 0) < 2:
+    # Regenerate once only when the answer is ungrounded AND the evidence was
+    # weak. When the grade was relevant, trust the strong retrieval and stop, so
+    # a small local model's noisy self-check does not cause needless regeneration.
+    if (
+        not state.get("grounded", True)
+        and state.get("grade") == "weak"
+        and state.get("generations", 0) < 2
+    ):
         return "generate"
     return END
 
@@ -78,7 +85,9 @@ def run_agent(model: str, question: str, chat_history=None) -> dict:
     """
     history = _to_lc_messages(chat_history)
     query = (
-        _reformulate_query(_make_llm(model), question, history) if history else question
+        _reformulate_query(_make_llm(model, temperature=0), question, history)
+        if history
+        else question
     )
     initial = {
         "model": model,

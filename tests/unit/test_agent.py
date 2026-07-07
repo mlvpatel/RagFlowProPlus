@@ -32,14 +32,19 @@ def test_decide_after_check_ends_when_grounded():
     assert graph._decide_after_check({"grounded": True}) == END
 
 
-def test_decide_after_check_regenerates_once_when_ungrounded():
-    assert (
-        graph._decide_after_check({"grounded": False, "generations": 1}) == "generate"
-    )
+def test_decide_after_check_regenerates_when_ungrounded_and_weak():
+    state = {"grounded": False, "grade": "weak", "generations": 1}
+    assert graph._decide_after_check(state) == "generate"
+
+
+def test_decide_after_check_trusts_strong_retrieval():
+    state = {"grounded": False, "grade": "relevant", "generations": 1}
+    assert graph._decide_after_check(state) == END
 
 
 def test_decide_after_check_stops_after_two_generations():
-    assert graph._decide_after_check({"grounded": False, "generations": 2}) == END
+    state = {"grounded": False, "grade": "weak", "generations": 2}
+    assert graph._decide_after_check(state) == END
 
 
 def test_graph_compiles():

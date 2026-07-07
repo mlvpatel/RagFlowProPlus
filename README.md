@@ -8,6 +8,10 @@ RagFlowProPlus does not answer in one shot. It plans, retrieves, grades its own 
 
 [![CI](https://github.com/mlvpatel/RagFlowProPlus/actions/workflows/ci.yml/badge.svg)](https://github.com/mlvpatel/RagFlowProPlus/actions/workflows/ci.yml) ![Python](https://img.shields.io/badge/python-3.11-blue) ![LangGraph](https://img.shields.io/badge/agent-LangGraph-blue) ![Postgres](https://img.shields.io/badge/Postgres-pgvector-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
+![RagFlowProPlus answering with its reasoning trace on a local model](assets/videos/ragflowproplus-demo.gif)
+
+The clip above is a live, unedited run on a local qwen2.5 model over pgvector. The expandable trace shows the agent retrieve, grade, generate, and self check, with a confidence score. A full resolution screenshot is at [assets/screenshots/ragflowproplus-ui.png](assets/screenshots/ragflowproplus-ui.png). No paid keys were used.
+
 ## What makes it agentic
 
 The engine follows the planning patterns of a real agent, each mapped to a node in a bounded graph:
@@ -25,11 +29,7 @@ Every branch is bounded, so the loop always terminates. That is the cost guard: 
 
 ## How a question is answered
 
-```
-retrieve -> grade -> (relevant)      -> generate -> self check -> answer
-                  -> (weak, retries) -> rewrite  -> retrieve ...
-                  -> (retries used)  -> web fallback (optional) -> generate
-```
+The agent retrieves, then grades the evidence. If the grade is relevant it generates and self checks. If the grade is weak it rewrites the query and retrieves again, up to a bounded number of attempts, then optionally falls back to web search, then generates. Every branch is bounded, so the loop always terminates.
 
 On a question the documents do not cover, the agent grades the evidence weak, rewrites and retries within its bounded budget, then answers honestly that it does not have the information rather than inventing one.
 

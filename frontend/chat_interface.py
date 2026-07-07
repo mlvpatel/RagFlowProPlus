@@ -22,7 +22,7 @@ _STEP_LABEL = {
 def _render_steps(steps, confidence, used_web) -> None:
     if not steps:
         return
-    path = " -> ".join(_STEP_LABEL.get(s.get("node"), s.get("node", "")) for s in steps)
+    path = ", ".join(_STEP_LABEL.get(s.get("node"), s.get("node", "")) for s in steps)
     header = f"Agent reasoning: {len(steps)} steps"
     if confidence is not None:
         header += f", confidence {confidence:.2f}"

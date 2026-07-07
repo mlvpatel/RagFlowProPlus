@@ -4,7 +4,7 @@ import streamlit as st
 
 from frontend import api_utils
 
-MODELS = ["gpt-4o-mini", "gpt-4o", "llama3.2:3b"]
+MODELS = ["qwen2.5:7b-instruct", "llama3.2:3b", "gpt-4o-mini", "gpt-4o"]
 
 
 def display_sidebar() -> None:

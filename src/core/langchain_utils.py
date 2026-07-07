@@ -55,22 +55,35 @@ _qa_prompt = ChatPromptTemplate.from_messages(
 )
 
 
-def _make_llm(model: str):
-    """Return a chat model for the given model name, provider chosen by name."""
+def _make_llm(model: str, temperature: float | None = None):
+    """Return a chat model for the given model name, provider chosen by name.
+
+    The agent passes temperature 0 so grading and self checking are
+    deterministic and reproducible rather than varying run to run.
+    """
     name = model.lower()
     if any(
         tag in name for tag in ("llama", "qwen", "deepseek", "mistral", "gemma", "phi")
     ):
         from langchain_ollama import ChatOllama
 
-        return ChatOllama(model=model, base_url=settings.ollama_base_url)
+        kwargs = {"model": model, "base_url": settings.ollama_base_url}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        return ChatOllama(**kwargs)
     if "claude" in name:
         from langchain_anthropic import ChatAnthropic
 
-        return ChatAnthropic(model=model)
+        kwargs = {"model": model}
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        return ChatAnthropic(**kwargs)
     from langchain_openai import ChatOpenAI
 
-    return ChatOpenAI(model=model, api_key=settings.openai_api_key)
+    kwargs = {"model": model, "api_key": settings.openai_api_key}
+    if temperature is not None:
+        kwargs["temperature"] = temperature
+    return ChatOpenAI(**kwargs)
 
 
 def get_final_retriever():
