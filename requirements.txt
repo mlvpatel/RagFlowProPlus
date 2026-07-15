@@ -59,7 +59,7 @@ tenacity>=9.0.0
 pyyaml>=6.0.0
 
 # Build tool pinned to a patched version within torch's supported range
-setuptools>=78.1.1,<82
+setuptools>=83.0.0
 
 # Testing
 pytest>=8.0.0
