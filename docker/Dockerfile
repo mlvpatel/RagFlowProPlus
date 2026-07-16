@@ -1,4 +1,4 @@
-# RagFlowProPlus image for the api, worker, and streamlit services.
+# rag-agentic-2025 image for the api, worker, and streamlit services.
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
