@@ -1,17 +1,15 @@
 """
-RAG chain for rag-modular-2023, built directly on langchain-core (LCEL).
+RAG chain for rag-agentic-2025, built directly on langchain-core (LCEL).
 
 Building on langchain-core rather than the legacy langchain.chains helpers
-keeps this stable across langchain major versions. The flow is:
-reformulate the question using chat history (skipped on the first turn),
-retrieve with the hybrid retriever, then generate an answer grounded in the
-retrieved context. Both a single-shot and a streaming entry point are
-provided. The LLM provider is chosen from the model name, so the same code
-serves OpenAI, Anthropic, and local Ollama models.
+keeps this stable across langchain major versions. The helpers here feed the
+agent graph: model routing, history conversion, standalone-question rewriting,
+and the retriever stack. The LLM provider is chosen from the model name, so
+the same code serves OpenAI, Anthropic, and local Ollama models.
 """
 
 import logging
-from typing import Any, Iterator, List
+from typing import Any, List
 
 from langchain_core.documents import Document
 from langchain_core.messages import AIMessage, HumanMessage
@@ -31,24 +29,9 @@ CONTEXTUALIZE_SYSTEM = (
     "reformulate it if needed and otherwise return it as is."
 )
 
-QA_SYSTEM = (
-    "You are a helpful assistant for rag-modular-2023. Use the following retrieved "
-    "context to answer the user question accurately and concisely. If the "
-    "context does not contain enough information, say so rather than guessing.\n\n"
-    "Context:\n{context}"
-)
-
 _contextualize_prompt = ChatPromptTemplate.from_messages(
     [
         ("system", CONTEXTUALIZE_SYSTEM),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ]
-)
-
-_qa_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", QA_SYSTEM),
         MessagesPlaceholder("chat_history"),
         ("human", "{input}"),
     ]
@@ -131,33 +114,3 @@ def _reformulate_query(llm, user_input: str, history: List[Any]) -> str:
 
 def _format_context(docs: List[Document]) -> str:
     return "\n\n".join(doc.page_content for doc in docs)
-
-
-def answer_question(model: str, user_input: str, chat_history=None) -> dict:
-    """Run the full RAG flow once and return {answer, context}."""
-    llm = _make_llm(model)
-    retriever = get_final_retriever()
-    history = _to_lc_messages(chat_history)
-    query = _reformulate_query(llm, user_input, history)
-    docs = retriever.invoke(query)
-    chain = _qa_prompt | llm | StrOutputParser()
-    answer = chain.invoke(
-        {"input": user_input, "chat_history": history, "context": _format_context(docs)}
-    )
-    return {"answer": answer, "context": docs}
-
-
-def stream_answer(model: str, user_input: str, chat_history=None) -> Iterator[str]:
-    """Stream the answer tokens for the RAG flow (retrieval runs first)."""
-    llm = _make_llm(model)
-    retriever = get_final_retriever()
-    history = _to_lc_messages(chat_history)
-    query = _reformulate_query(llm, user_input, history)
-    docs = retriever.invoke(query)
-    chain = _qa_prompt | llm
-    for chunk in chain.stream(
-        {"input": user_input, "chat_history": history, "context": _format_context(docs)}
-    ):
-        text = getattr(chunk, "content", "")
-        if text:
-            yield text

@@ -13,7 +13,6 @@ from contextlib import asynccontextmanager
 from celery.result import AsyncResult
 from fastapi import (
     APIRouter,
-    Depends,
     FastAPI,
     File,
     HTTPException,
@@ -39,7 +38,7 @@ from src.api.pydantic_models import (
     QueryInput,
     QueryResponse,
 )
-from src.api.security import limiter, sanitize_question, verify_api_key
+from src.api.security import limiter, sanitize_question
 from src.core.config import settings
 from src.core.langchain_utils import warm_reranker
 from src.core.logging_config import configure_logging, logger
@@ -83,7 +82,7 @@ def health():
 
 @v1.post("/chat", response_model=QueryResponse)
 @limiter.limit("60/minute")
-def chat(request: Request, query: QueryInput, _: str = Depends(verify_api_key)):
+def chat(request: Request, query: QueryInput):
     """Answer with the agentic RAG and return the answer plus its reasoning trace."""
     session_id = query.session_id or str(uuid.uuid4())
     question = sanitize_question(query.question)
@@ -106,9 +105,7 @@ def chat(request: Request, query: QueryInput, _: str = Depends(verify_api_key)):
 
 @v1.post("/upload-doc")
 @limiter.limit("10/minute")
-async def upload_doc(
-    request: Request, file: UploadFile = File(...), _: str = Depends(verify_api_key)
-):
+async def upload_doc(request: Request, file: UploadFile = File(...)):
     extension = os.path.splitext(file.filename)[1].lower()
     if extension not in ALLOWED_EXTENSIONS:
         raise HTTPException(
@@ -125,12 +122,12 @@ async def upload_doc(
 
 
 @v1.get("/list-docs", response_model=list[DocumentInfo])
-def list_docs(_: str = Depends(verify_api_key)):
+def list_docs():
     return get_all_documents()
 
 
 @v1.post("/delete-doc")
-def delete_document(req: DeleteFileRequest, _: str = Depends(verify_api_key)):
+def delete_document(req: DeleteFileRequest):
     vector_ok = delete_doc(req.file_id)
     record_ok = delete_document_record(req.file_id)
     if not (vector_ok and record_ok):
@@ -139,7 +136,7 @@ def delete_document(req: DeleteFileRequest, _: str = Depends(verify_api_key)):
 
 
 @v1.get("/task/{task_id}")
-def task_status(task_id: str, _: str = Depends(verify_api_key)):
+def task_status(task_id: str):
     result = AsyncResult(task_id, app=celery_app)
     return {"task_id": task_id, "status": result.status}
 

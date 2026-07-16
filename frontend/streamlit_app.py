@@ -1,4 +1,4 @@
-"""rag-modular-2023 Streamlit application entry point."""
+"""rag-agentic-2025 Streamlit application entry point."""
 
 import os
 import sys

@@ -45,8 +45,6 @@ bleach>=6.2.0
 streamlit>=1.40.0
 requests>=2.32.0
 
-# Eval
-ragas>=0.2.0
 
 # Background tasks
 celery[redis]>=5.4.0

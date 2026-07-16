@@ -6,7 +6,7 @@ from src.api.db_utils import delete_document_record, insert_document_record
 from src.embeddings.vectorstore_utils import index_document
 from src.worker.celery_app import celery_app
 
-logger = logging.getLogger("rag_modular")
+logger = logging.getLogger("rag_agentic")
 
 
 @celery_app.task(name="process_document")

@@ -1,4 +1,4 @@
-# rag-modular-2023 development profile.
+# rag-agentic-2025 development profile.
 # Loaded by src/core/config.py when ENV=dev (the default). Environment
 # variables always override these values.
 log_level: DEBUG

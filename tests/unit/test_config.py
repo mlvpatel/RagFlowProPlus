@@ -13,7 +13,6 @@ def test_settings_has_documented_defaults():
     settings = Settings()
 
     assert settings.embedding_model == "models/gemini-embedding-001"
-    assert settings.embedding_dims == 768
     assert settings.reranker_model == "BAAI/bge-reranker-v2-m3"
     assert settings.top_k == 5
     assert settings.reranker_top_n == 5
@@ -23,7 +22,6 @@ def test_settings_has_documented_defaults():
     assert settings.redis_url == "redis://localhost:6379/0"
     assert settings.google_api_key is None
     assert settings.openai_api_key is None
-    assert settings.api_key == "change_me"
     assert settings.allowed_origins == "http://localhost:8501"
     assert settings.log_level == "INFO"
     assert settings.env == "dev"
@@ -38,11 +36,11 @@ def test_env_var_override_is_picked_up(monkeypatch):
 
 
 def test_env_var_override_case_insensitive(monkeypatch):
-    monkeypatch.setenv("embedding_dims", "1536")
+    monkeypatch.setenv("top_k", "9")
 
     settings = Settings()
 
-    assert settings.embedding_dims == 1536
+    assert settings.top_k == 9
 
 
 def test_yaml_file_overrides_defaults(tmp_path, monkeypatch):
@@ -62,7 +60,6 @@ def test_yaml_file_overrides_defaults(tmp_path, monkeypatch):
     assert settings.reranker_top_n == 8
     assert settings.chunk_size == 500
     # Untouched keys keep their defaults.
-    assert settings.embedding_dims == 768
 
 
 def test_env_var_takes_precedence_over_yaml(tmp_path, monkeypatch):

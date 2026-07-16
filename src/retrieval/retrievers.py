@@ -1,10 +1,10 @@
 """
-Hybrid retrieval for rag-modular-2023.
+Hybrid retrieval for rag-agentic-2025.
 
 Dense search (pgvector cosine distance) and sparse search (Postgres full
 text) are fused with Reciprocal Rank Fusion inside a single SQL query, so
-there is no per query index rebuild in Python. The rag-agentic-2025 baseline rebuilt
-a BM25 index over the whole corpus on every query; this replaces that.
+there is no per query index rebuild in Python. The rag-advanced-2023 rung
+rebuilt a BM25 index over the whole corpus on every query; this replaces that.
 
 A cross encoder reranker (bge-reranker-v2-m3) then reorders the fused
 candidates. The reranker is loaded lazily and can be injected, so tests
@@ -71,7 +71,7 @@ class HybridRetriever(BaseRetriever):
 
     embeddings: Any
     connection: str = settings.database_url
-    collection: str = "rag_modular_documents"
+    collection: str = "rag_agentic_documents"
     k: int = settings.top_k
     pool: int = 20
     rrf_k: int = 60

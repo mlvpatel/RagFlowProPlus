@@ -63,7 +63,8 @@ def retrieve(state):
 def grade_documents(state):
     llm = _make_llm(state["model"], temperature=0)
     context = _format_context(state.get("documents") or [])[:4000]
-    prompt = f"Question: {state['question']}\n\nContext:\n{context}"
+    question = state.get("query") or state["question"]
+    prompt = f"Question: {question}\n\nContext:\n{context}"
     raw = llm.invoke(
         [SystemMessage(content=_GRADER_SYSTEM), HumanMessage(content=prompt)]
     ).content
@@ -89,10 +90,14 @@ def grade_documents(state):
 
 def rewrite_query(state):
     llm = _make_llm(state["model"], temperature=0)
+    # Rewrite from the CURRENT query: after reformulation that is the
+    # standalone question, and a second rewrite iterates instead of
+    # deterministically reproducing the first one.
+    current = state.get("query") or state["question"]
     new_query = llm.invoke(
         [
             SystemMessage(content=_REWRITE_SYSTEM),
-            HumanMessage(content=state["question"]),
+            HumanMessage(content=current),
         ]
     ).content.strip()
     step = {"node": "rewrite", "query": new_query}
@@ -100,7 +105,7 @@ def rewrite_query(state):
 
 
 def web_search(state):
-    docs = web_search_docs(state["question"])
+    docs = web_search_docs(state.get("query") or state["question"])
     merged = (state.get("documents") or []) + docs
     step = {"node": "web_search", "documents": len(docs)}
     return {"documents": merged, "used_web": True, "steps": [step]}
@@ -110,8 +115,9 @@ def generate(state):
     llm = _make_llm(state["model"], temperature=0)
     context = _format_context(state.get("documents") or [])
     system = _ANSWER_SYSTEM.format(context=context)
+    question = state.get("query") or state["question"]
     answer = llm.invoke(
-        [SystemMessage(content=system), HumanMessage(content=state["question"])]
+        [SystemMessage(content=system), HumanMessage(content=question)]
     ).content
     generations = state.get("generations", 0) + 1
     step = {"node": "generate", "generations": generations}

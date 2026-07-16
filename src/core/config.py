@@ -1,4 +1,4 @@
-"""Single settings source for rag-modular-2023.
+"""Single settings source for rag-agentic-2025.
 
 Precedence, highest to lowest:
 1. Environment variables (case insensitive), including a `.env` file if present.
@@ -44,7 +44,6 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     google_api_key: str | None = None
     openai_api_key: str | None = None
-    api_key: str = "change_me"
     embedding_provider: str = "google"  # google or ollama
     embedding_model: str = "models/gemini-embedding-001"
     embedding_dims: int = 768
@@ -62,6 +61,7 @@ class Settings(BaseSettings):
     agent_max_steps: int = 12
     chunk_size: int = 1000
     chunk_overlap: int = 200
+    max_upload_mb: int = 25
     allowed_origins: str = "http://localhost:8501"
     log_level: str = "INFO"
     env: str = "dev"

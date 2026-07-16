@@ -5,7 +5,7 @@ import sys
 
 from src.core.config import settings
 
-logger = logging.getLogger("rag_modular")
+logger = logging.getLogger("rag_agentic")
 
 
 def configure_logging() -> None:

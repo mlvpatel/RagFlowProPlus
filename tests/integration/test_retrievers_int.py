@@ -14,7 +14,7 @@ from src.core.config import settings
 from src.embeddings.vectorstore_utils import _sqlalchemy_url
 from src.retrieval.retrievers import HybridRetriever
 
-COLLECTION = "rag_modular_test_hybrid"
+COLLECTION = "rag_agentic_test_hybrid"
 
 
 def _cleanup():

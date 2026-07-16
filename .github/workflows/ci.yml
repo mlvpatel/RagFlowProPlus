@@ -60,6 +60,4 @@ jobs:
         # ragas CVE-2026-6587 and diskcache CVE-2025-69872 (transitive under
         # ragas) have no patched release yet; tracked by Dependabot.
         run: |
-          pip-audit -r requirements.txt \
-            --ignore-vuln CVE-2026-6587 \
-            --ignore-vuln CVE-2025-69872
+          pip-audit -r requirements.txt

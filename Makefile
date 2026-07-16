@@ -1,4 +1,4 @@
-# rag-modular-2023 developer commands.
+# rag-agentic-2025 developer commands.
 # Bring up the data services first, then build and test against them.
 
 COMPOSE = docker compose -f docker/docker-compose.yml
@@ -18,7 +18,7 @@ help:
 	@echo "test       run unit tests"
 	@echo "test-int   run integration tests (needs db-up)"
 	@echo "eval       run the rag evaluation harness"
-	@echo "lint       run ruff"
+	@echo "lint       run black, flake8, isort checks"
 	@echo "format     run black and isort"
 	@echo "audit      run pip-audit on requirements.txt"
 
@@ -59,10 +59,10 @@ eval:
 	. .venv/bin/activate && python -m eval.run
 
 lint:
-	. .venv/bin/activate && ruff check src
+	. .venv/bin/activate && black --check src frontend eval tests && flake8 src frontend eval tests && isort --check-only src frontend eval tests
 
 format:
-	. .venv/bin/activate && black src tests && isort src tests
+	. .venv/bin/activate && black src frontend eval tests && isort src frontend eval tests
 
 audit:
 	. .venv/bin/activate && pip-audit -r requirements.txt
